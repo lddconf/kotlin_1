@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Notes</string>
+    <string name="date_format">E, dd MMM HH:mm</string>
+    <string name="note_tools_body_text">Some body text</string>
+    <string name="notes_tools_date_text">Date text</string>
+    <string name="notes_title_text">Title text</string>
+    <string name="note_title">Title</string>
+    <string name="note_body">Note</string>
+    <string name="new_note">New note</string>
 </resources>
