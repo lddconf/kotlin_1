@@ -44,7 +44,6 @@ class NotesRVAdapter : RecyclerView.Adapter<NotesRVAdapter.NoteRVHolder>() {
 
             this as CardView
             this.setCardBackgroundColor(ResourcesCompat.getColor(resources, note.color, null));
-
         }
     }
 }
