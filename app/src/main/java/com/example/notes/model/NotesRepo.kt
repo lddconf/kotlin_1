@@ -1,10 +1,15 @@
 package com.example.notes.model
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.notes.toRGBColor
 import java.util.*
 
 object NotesRepo  {
-    val notes = listOf<Note>(
+
+    private val notesLiveData = MutableLiveData<List<Note>>()
+
+    private val notes = mutableListOf<Note>(
         Note("Title1", "Note 1 body", color = Note.PredefinedColor.ORANGE.toRGBColor() ),
         Note("Title2", "Note 2 body", color = Note.PredefinedColor.GREEN.toRGBColor() ),
         Note("Title3", "Note 3 body", color = Note.PredefinedColor.YELLOW.toRGBColor() ),
@@ -13,4 +18,25 @@ object NotesRepo  {
         Note("Title6", "Note 7 body", color = Note.PredefinedColor.RED.toRGBColor() ),
         Note("Title7", "Note 8 body", color = Note.PredefinedColor.VIOLET.toRGBColor() )
     )
+
+    fun getNotes() : LiveData<List<Note>> = notesLiveData
+
+    fun saveNote(note : Note) {
+        addOrReplace(note)
+        notesLiveData.value = notes
+    }
+
+    private fun addOrReplace(note : Note) {
+        for (i in 0 until notes.size) {
+            if (notes[i] == note) {
+                notes[i] = note
+                return
+            }
+        }
+        notes.add(note)
+    }
+
+    init {
+        notesLiveData.value = notes
+    }
 }
