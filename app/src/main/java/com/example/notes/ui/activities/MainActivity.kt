@@ -18,7 +18,7 @@ import com.example.notes.ui.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel : MainViewModel
+    private lateinit var viewModel: MainViewModel
     private lateinit var adapter: NotesRVAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,13 +41,13 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when(item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
             onBackPressed()
             true
         }
         R.id.action_add -> {
-            startNoteEditor(Note("",""))
+            startNoteEditor(Note("", ""))
             true
         }
         else -> {
@@ -61,12 +61,11 @@ class MainActivity : AppCompatActivity() {
         adapter = NotesRVAdapter()
         notes_list.adapter = adapter
         val swipeDelegate =
-            ContextCompat.getDrawable(applicationContext, R.drawable.ic_baseline_delete_forever_24)?.let {
-                adapter.NoteRVSwipeToDelete(
-                    it
-                )
-            }
-        
+                ContextCompat.getDrawable(applicationContext, R.drawable.ic_baseline_delete_forever_24)?.let {
+                    adapter.NoteRVSwipeToDelete(
+                            it
+                    )
+                }
         adapter.onItemClickListener = object : OnItemClickListener {
             override fun onItemClick(note: Note) {
                 startNoteEditor(note)
@@ -76,12 +75,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun initMainViewModel() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.viewState().observe(this, { value->
+        viewModel.viewState().observe(this, { value ->
             value?.let { adapter.notes = it.notes }
         })
     }
 
-    private fun startNoteEditor( note: Note ) {
+    private fun startNoteEditor(note: Note) {
         val intent = NoteViewActivity.getStartIntent(applicationContext, note)
         startActivity(intent)
     }

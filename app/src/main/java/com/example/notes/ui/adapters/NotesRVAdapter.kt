@@ -23,19 +23,19 @@ interface OnItemClickListener {
 
 class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null) : RecyclerView.Adapter<NotesRVAdapter.NoteRVHolder>() {
 
-    var notes : List<Note> = listOf()
-        set (value) {
+    var notes: List<Note> = listOf()
+        set(value) {
             field = value
             notifyDataSetChanged()
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteRVHolder {
         return NoteRVHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.note_preview_layout,
-                parent,
-                false
-            )
+                LayoutInflater.from(parent.context).inflate(
+                        R.layout.note_preview_layout,
+                        parent,
+                        false
+                )
         )
     }
 
@@ -49,8 +49,8 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null) : Rec
         fun bind(note: Note) = with(itemView) {
             note_title.text = note.title
             note_date.text = SimpleDateFormat(
-                context.getString(R.string.date_format),
-                Locale.getDefault()
+                    context.getString(R.string.date_format),
+                    Locale.getDefault()
             ).format(note.lastChanged)
             note_body.text = note.text
 
@@ -64,19 +64,19 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null) : Rec
 
     //Not yet implemented
     inner class NoteRVSwipeToDelete(val icon: Drawable) : ItemTouchHelper.SimpleCallback(
-        0,
-        ItemTouchHelper.LEFT
+            0,
+            ItemTouchHelper.LEFT
     ) {
         val background = ColorDrawable(Color.RED);
 
         override fun onChildDraw(
-            c: Canvas,
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            dX: Float,
-            dY: Float,
-            actionState: Int,
-            isCurrentlyActive: Boolean
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
         ) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
 
@@ -91,8 +91,8 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null) : Rec
                 val iconRight = itemView.right - iconMargin
                 icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
                 background.setBounds(
-                    itemView.right + dX.toInt() - backgroundCornerOffset,
-                    itemView.top, itemView.right, itemView.bottom
+                        itemView.right + dX.toInt() - backgroundCornerOffset,
+                        itemView.top, itemView.right, itemView.bottom
                 )
             } else { // view is unSwiped
                 background.setBounds(0, 0, 0, 0)
@@ -103,9 +103,9 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null) : Rec
         }
 
         override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
         ): Boolean {
             return false
         }

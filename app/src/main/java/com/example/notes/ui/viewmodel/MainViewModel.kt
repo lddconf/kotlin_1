@@ -7,7 +7,7 @@ import com.example.notes.model.NotesRepo
 import com.example.notes.ui.activities.MainViewState
 
 class MainViewModel : ViewModel() {
-    private val viewStateData  = MutableLiveData<MainViewState>()
+    private val viewStateData = MutableLiveData<MainViewState>()
 
     init {
         NotesRepo.getNotes().observeForever {
@@ -15,5 +15,5 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun viewState() : LiveData<MainViewState> = viewStateData
+    fun viewState(): LiveData<MainViewState> = viewStateData
 }

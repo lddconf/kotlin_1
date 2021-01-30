@@ -26,15 +26,15 @@ class NoteViewActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_NOTE = "NoteViewActivity.extra.NOTE"
         const val SAVE_DELAY_MS = 3.toLong()
-        fun getStartIntent(context: Context, note : Note? ) : Intent {
-            val intent = Intent( context, NoteViewActivity::class.java )
+        fun getStartIntent(context: Context, note: Note?): Intent {
+            val intent = Intent(context, NoteViewActivity::class.java)
             intent.putExtra(EXTRA_NOTE, note)
             return intent
         }
     }
 
-    private var note : Note? = null
-    private lateinit var viewModel : NoteViewModel
+    private var note: Note? = null
+    private lateinit var viewModel: NoteViewModel
     private val onTextChangedListener = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
         }
@@ -77,7 +77,7 @@ class NoteViewActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when( item.itemId ) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> {
             onBackPressed()
             true
@@ -99,12 +99,12 @@ class NoteViewActivity : AppCompatActivity() {
     }
 
     private fun saveNote() = title_editor_text.text?.let {
-        Handler(Looper.getMainLooper()).postDelayed(object: Runnable {
+        Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
             override fun run() {
                 note = note?.copy(
-                    title = title_editor_text.text.toString(),
-                    text = body_editor_text.text.toString(),
-                    lastChanged = Date()
+                        title = title_editor_text.text.toString(),
+                        text = body_editor_text.text.toString(),
+                        lastChanged = Date()
                 )
 
                 note?.apply {
