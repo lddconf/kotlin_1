@@ -73,6 +73,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
             override fun onItemClick(note: Note) {
                 startNoteEditor(note)
             }
+
             override fun onItemDelete(note: Note) {
                 viewModel.removeNoteWithId(note.uid)
             }

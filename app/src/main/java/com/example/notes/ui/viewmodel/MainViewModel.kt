@@ -1,9 +1,6 @@
 package com.example.notes.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import com.example.notes.model.Note
 import com.example.notes.model.NoteResult
 import com.example.notes.model.NotesRepo
@@ -34,7 +31,7 @@ class MainViewModel(private val repo: NotesRepo = NotesRepo) : BaseViewModel<Lis
     }
 
     fun removeNoteWithId(uid: String) {
-        repo.deleteNoteWithId(uid)
+        repo.removeNoteWithId(uid)
     }
 
     override fun onCleared() {

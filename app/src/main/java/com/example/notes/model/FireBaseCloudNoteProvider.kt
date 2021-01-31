@@ -17,7 +17,6 @@ class FireBaseCloudNoteProvider : NetworkNoteProvider {
     private val db = FirebaseFirestore.getInstance()
     private val notesRef = db.collection(NOTES_FIRESTORE_COLLECTION)
 
-
     override fun subscribeToNotes(): LiveData<NoteResult> {
         val result = MutableLiveData<NoteResult>()
 
@@ -40,9 +39,7 @@ class FireBaseCloudNoteProvider : NetworkNoteProvider {
 
     override fun getNoteById(uid: String): LiveData<NoteResult> {
         val result = MutableLiveData<NoteResult>()
-
-        notesRef
-            .document(uid)
+        notesRef.document(uid)
             .get().addOnSuccessListener { docSnapshot ->
                 result.value = NoteResult.Success(docSnapshot.toObject(Note::class.java))
                 Log.d(TAG, "Note with uid=$uid has been loaded")
@@ -55,7 +52,6 @@ class FireBaseCloudNoteProvider : NetworkNoteProvider {
 
     override fun saveNote(note: Note): LiveData<NoteResult> {
         val result = MutableLiveData<NoteResult>()
-
         notesRef.document(note.uid)
             .set(note)
             .addOnSuccessListener {
@@ -68,7 +64,7 @@ class FireBaseCloudNoteProvider : NetworkNoteProvider {
         return result
     }
 
-    override fun deleteNoteWithId(uid: String): LiveData<NoteResult> {
+    override fun removeNoteWithId(uid: String): LiveData<NoteResult> {
         val result = MutableLiveData<NoteResult>()
         notesRef.document(uid).delete().addOnSuccessListener {
             Log.d(TAG, "Note $uid has been deleted")

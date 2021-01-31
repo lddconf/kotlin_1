@@ -2,25 +2,22 @@ package com.example.notes.ui.activities
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
 import android.view.MenuItem
-import androidx.lifecycle.ViewModel
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import com.example.notes.R
+import com.example.notes.*
 import com.example.notes.model.Note
-import com.example.notes.toRGBColor
-import com.example.notes.ui.viewmodel.BaseViewModel
 import com.example.notes.ui.viewmodel.NoteViewModel
+import com.google.android.material.snackbar.Snackbar
+import com.thebluealliance.spectrum.SpectrumDialog
 import kotlinx.android.synthetic.main.activity_note_view.*
-import kotlinx.android.synthetic.main.note_preview_layout.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,6 +33,7 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     }
 
     private var note: Note? = null
+
     override val viewModel: NoteViewModel by lazy {
         ViewModelProvider(this).get(NoteViewModel::class.java)
     }
@@ -74,7 +72,13 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
                 SimpleDateFormat(getString(R.string.date_format), Locale.getDefault()).format(
                     lastChanged
                 )
-            supportActionBar?.setBackgroundDrawable(ColorDrawable(color.toRGBColor()))
+            supportActionBar?.setBackgroundDrawable(
+                ColorDrawable(
+                    ContextCompat.getColor(applicationContext, color.toColorResId())
+                )
+            )
+
+
             title_editor_text?.setText(title)
             body_editor_text?.setText(text)
         }
@@ -90,9 +94,39 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
             onBackPressed()
             true
         }
+        R.id.action_color_pick -> {
+            showColorPickerDialog()
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showColorPickerDialog() {
+        val colorDialog = SpectrumDialog.Builder(this)
+        colorDialog.setColors(R.array.predefined_colors)
+
+        if (note == null) {
+            note = Note()
+        }
+
+        note?.let {
+            colorDialog.setSelectedColor(it.color.toColorResId())
+            colorDialog.setOnColorSelectedListener { positiveResult, color ->
+                if (positiveResult) {
+                    val newColor = colorToPredefinedColor(applicationContext, color, Note().color)
+                    note?.color = newColor
+                    initView()
+                }
+            }
+        }
+        colorDialog.build()?.show(supportFragmentManager, "Select color")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.note_editor_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun saveNote() = title_editor_text.text?.let {
@@ -101,10 +135,11 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
                 title = title_editor_text.text.toString(),
                 text = body_editor_text.text.toString(),
                 lastChanged = Date()
-            ) ?: Note (
+            ) ?: Note(
                 title = title_editor_text.text.toString(),
                 text = body_editor_text.text.toString(),
-                lastChanged = Date() )
+                lastChanged = Date()
+            )
 
             note?.let {
                 viewModel.saveChanges(it)
@@ -118,6 +153,8 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     }
 
     override fun renderError(error: Throwable) {
-        TODO("Not yet implemented")
+        val snackbar =
+            Snackbar.make(findViewById(layoutResourceId), error.message ?: "", Snackbar.LENGTH_LONG)
+        snackbar.show()
     }
 }

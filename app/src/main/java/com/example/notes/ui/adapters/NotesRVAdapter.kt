@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notes.R
 import com.example.notes.model.Note
-import com.example.notes.toRGBColor
+import com.example.notes.toColorResId
 import kotlinx.android.synthetic.main.note_preview_layout.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -59,7 +59,7 @@ class NotesRVAdapter(
             note_body.text = note.text
 
             this as CardView
-            this.setCardBackgroundColor(ResourcesCompat.getColor(resources, note.color.toRGBColor(), null));
+            this.setCardBackgroundColor(ResourcesCompat.getColor(resources, note.color.toColorResId(), null));
             this.setOnClickListener {
                 onItemActionListener?.onItemClick(note)
             }
