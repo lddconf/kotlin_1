@@ -7,11 +7,11 @@ import java.util.*
 
 @Parcelize
 data class Note (
-    val title: String,
-    val text: String,
+    val title: String = "",
+    val text: String = "",
     val uid : String = UUID.randomUUID().toString(),
     val lastChanged: Date = Date(),
-    val color: Int = PredefinedColor.DARK_BLUE.toRGBColor()
+    val color: PredefinedColor = PredefinedColor.DARK_BLUE
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

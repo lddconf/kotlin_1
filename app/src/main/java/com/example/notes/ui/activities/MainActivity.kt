@@ -1,6 +1,5 @@
 package com.example.notes.ui.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -11,22 +10,24 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.notes.R
 import com.example.notes.model.Note
 import com.example.notes.ui.adapters.NotesRVAdapter
-import com.example.notes.ui.adapters.OnItemClickListener
-import com.example.notes.ui.adapters.OnItemDeleteListener
+import com.example.notes.ui.adapters.OnItemActionListener
 import com.example.notes.ui.viewmodel.MainViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: MainViewModel
+class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
+    override val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
+    override val layoutResourceId: Int = R.layout.activity_main
+
     private lateinit var adapter: NotesRVAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         initAppBar()
         initNotesRV()
-        initMainViewModel()
     }
 
     private fun initAppBar() {
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
         R.id.action_add -> {
-            startNoteEditor(Note("", ""))
+            startNoteEditor()
             true
         }
         else -> {
@@ -59,34 +60,42 @@ class MainActivity : AppCompatActivity() {
         adapter = NotesRVAdapter()
         notes_list.adapter = adapter
         val swipeItemTouchHelper =
-                ContextCompat.getDrawable(applicationContext, R.drawable.ic_baseline_delete_forever_24)?.let { icon ->
-                    ItemTouchHelper(adapter.NoteRVSwipeToDelete(
+            ContextCompat.getDrawable(applicationContext, R.drawable.ic_baseline_delete_forever_24)
+                ?.let { icon ->
+                    ItemTouchHelper(
+                        adapter.NoteRVSwipeToDelete(
                             adapter, icon
-                    ))
+                        )
+                    )
                 }
         swipeItemTouchHelper?.attachToRecyclerView(notes_list)
-        adapter.onItemClickListener = object : OnItemClickListener {
+        adapter.onItemActionListener = object : OnItemActionListener {
             override fun onItemClick(note: Note) {
                 startNoteEditor(note)
             }
-        }
-
-        adapter.onItemDeleteListener = object : OnItemDeleteListener {
             override fun onItemDelete(note: Note) {
-                viewModel.eraseNote(note)
+                viewModel.removeNoteWithId(note.uid)
             }
         }
     }
 
-    private fun initMainViewModel() {
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.viewState().observe(this, { value ->
-            value?.let { adapter.notes = it.notes }
-        })
+    private fun startNoteEditor(note: Note? = null) {
+        val intent = NoteViewActivity.getStartIntent(applicationContext, note?.uid)
+        startActivity(intent)
     }
 
-    private fun startNoteEditor(note: Note) {
-        val intent = NoteViewActivity.getStartIntent(applicationContext, note)
-        startActivity(intent)
+    override fun renderData(data: List<Note>?) {
+        data?.apply {
+            adapter.notes = this
+        }
+    }
+
+    override fun renderError(error: Throwable) {
+        val snackbar = Snackbar.make(
+            findViewById(R.id.appbar_layout),
+            error.message ?: "",
+            Snackbar.LENGTH_LONG
+        )
+        snackbar.show()
     }
 }

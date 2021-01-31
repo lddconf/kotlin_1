@@ -13,20 +13,18 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notes.R
 import com.example.notes.model.Note
+import com.example.notes.toRGBColor
 import kotlinx.android.synthetic.main.note_preview_layout.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-interface OnItemClickListener {
+interface OnItemActionListener {
     fun onItemClick(note: Note)
-}
-
-interface OnItemDeleteListener {
     fun onItemDelete(note: Note)
 }
 
-class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null,
-                     var onItemDeleteListener: OnItemDeleteListener? = null
+class NotesRVAdapter(
+    var onItemActionListener: OnItemActionListener? = null
 ) : RecyclerView.Adapter<NotesRVAdapter.NoteRVHolder>() {
 
     var notes: List<Note> = listOf()
@@ -37,11 +35,11 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteRVHolder {
         return NoteRVHolder(
-                LayoutInflater.from(parent.context).inflate(
-                        R.layout.note_preview_layout,
-                        parent,
-                        false
-                )
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.note_preview_layout,
+                parent,
+                false
+            )
         )
     }
 
@@ -55,39 +53,41 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null,
         fun bind(note: Note) = with(itemView) {
             note_title.text = note.title
             note_date.text = SimpleDateFormat(
-                    context.getString(R.string.date_format),
-                    Locale.getDefault()
+                context.getString(R.string.date_format),
+                Locale.getDefault()
             ).format(note.lastChanged)
             note_body.text = note.text
 
             this as CardView
-            this.setCardBackgroundColor(ResourcesCompat.getColor(resources, note.color, null));
+            this.setCardBackgroundColor(ResourcesCompat.getColor(resources, note.color.toRGBColor(), null));
             this.setOnClickListener {
-                onItemClickListener?.onItemClick(note)
+                onItemActionListener?.onItemClick(note)
             }
         }
     }
 
-
-    inner class NoteRVSwipeToDelete(private val adapter: NotesRVAdapter, private val icon: Drawable) : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.LEFT
+    inner class NoteRVSwipeToDelete(
+        private val adapter: NotesRVAdapter,
+        private val icon: Drawable
+    ) : ItemTouchHelper.SimpleCallback(
+        0,
+        ItemTouchHelper.LEFT
     ) {
         val background = ColorDrawable(Color.RED);
 
         override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
         ) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
 
             val itemView = viewHolder.itemView
-            val backgroundCornerOffset = 20.toInt()
+            val backgroundCornerOffset = 20
             val iconMargin = (itemView.getHeight() - icon.intrinsicHeight) / 2;
             val iconTop = itemView.top + (itemView.height - icon.intrinsicHeight) / 2;
             val iconBottom = iconTop + icon.intrinsicHeight;
@@ -97,8 +97,8 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null,
                 val iconRight = itemView.right - iconMargin
                 icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
                 background.setBounds(
-                        itemView.right + dX.toInt() - backgroundCornerOffset,
-                        itemView.top, itemView.right, itemView.bottom
+                    itemView.right + dX.toInt() - backgroundCornerOffset,
+                    itemView.top, itemView.right, itemView.bottom
                 )
             } else { // view is unSwiped
                 background.setBounds(0, 0, 0, 0)
@@ -109,16 +109,16 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null,
         }
 
         override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
         ): Boolean {
             return false
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.getAdapterPosition();
-            adapter.onItemDeleteListener?.apply {
+            adapter.onItemActionListener?.apply {
                 notifyItemRemoved(position)
                 onItemDelete(notes[position])
             }

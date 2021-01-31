@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "706142999562",
+    "project_id": "geonotes-62c0e",
+    "storage_bucket": "geonotes-62c0e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706142999562:android:426ecc377d5017bd2cfbf3",
+        "android_client_info": {
+          "package_name": "com.example.notes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706142999562-7bd4s3urdgkm7rsj19c1irkoeq3emsip.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnQP224HJznp1f2pLkMR2K6Mm2nwpi66o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706142999562-7bd4s3urdgkm7rsj19c1irkoeq3emsip.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

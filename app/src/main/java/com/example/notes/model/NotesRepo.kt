@@ -1,12 +1,7 @@
 package com.example.notes.model
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.notes.toRGBColor
-import java.util.*
-
 object NotesRepo  {
-
+/*
     private val notesLiveData = MutableLiveData<List<Note>>()
 
     private val notes = mutableListOf<Note>(
@@ -19,7 +14,7 @@ object NotesRepo  {
         Note("Title7", "Note 8 body", color = Note.PredefinedColor.VIOLET.toRGBColor() )
     )
 
-    fun getNotes() : LiveData<List<Note>> = notesLiveData
+
 
     fun saveNote(note : Note) {
         addOrReplace(note)
@@ -53,4 +48,14 @@ object NotesRepo  {
     init {
         notesLiveData.value = notes
     }
+ */
+    private val networkNoteProvider = FireBaseCloudNoteProvider()
+
+    fun getNotes() = networkNoteProvider.subscribeToNotes()
+
+    fun saveNote(note: Note) = networkNoteProvider.saveNote(note)
+
+    fun getNoteById(uid :String) = networkNoteProvider.getNoteById(uid)
+
+    fun deleteNoteWithId(uid: String) = networkNoteProvider.deleteNoteWithId(uid)
 }
