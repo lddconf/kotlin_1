@@ -17,7 +17,7 @@
         >
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/noteToolbar"
+            android:id="@+id/note_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary" />
@@ -25,7 +25,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/titleEditor"
+        android:id="@+id/title_editor_layout"
         android:layout_height="wrap_content"
         android:hint="@string/note_title"
         android:layout_marginTop="5dp"
@@ -36,20 +36,22 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/title_editor_text"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/noteBodyEditor"
+        android:id="@+id/note_body_editor"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:hint="@string/note_body" >
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/body_editor_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-        />
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

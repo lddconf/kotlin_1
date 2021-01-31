@@ -9,15 +9,24 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="NoteBriefHeader" >
+    <style name="NoteBriefHeader">
         <item name="android:textSize">15sp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:layout_margin">6dp</item>
     </style>
 
-    <style name="NoteBriefText" >
+    <style name="NoteBriefText">
         <item name="android:textSize">25sp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:layout_margin">6dp</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
