@@ -3,10 +3,11 @@ package com.example.notes.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.notes.model.Note
 import com.example.notes.model.NotesRepo
 import com.example.notes.ui.activities.MainViewState
 
-class MainViewModel : ViewModel() {
+class MainViewModel() : ViewModel() {
     private val viewStateData = MutableLiveData<MainViewState>()
 
     init {
@@ -16,4 +17,8 @@ class MainViewModel : ViewModel() {
     }
 
     fun viewState(): LiveData<MainViewState> = viewStateData
+
+    fun eraseNote(note: Note) {
+        NotesRepo.eraseNote(note)
+    }
 }

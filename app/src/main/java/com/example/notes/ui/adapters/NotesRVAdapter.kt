@@ -21,7 +21,13 @@ interface OnItemClickListener {
     fun onItemClick(note: Note)
 }
 
-class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null) : RecyclerView.Adapter<NotesRVAdapter.NoteRVHolder>() {
+interface OnItemDeleteListener {
+    fun onItemDelete(note: Note)
+}
+
+class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null,
+                     var onItemDeleteListener: OnItemDeleteListener? = null
+) : RecyclerView.Adapter<NotesRVAdapter.NoteRVHolder>() {
 
     var notes: List<Note> = listOf()
         set(value) {
@@ -62,8 +68,8 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null) : Rec
         }
     }
 
-    //Not yet implemented
-    inner class NoteRVSwipeToDelete(val icon: Drawable) : ItemTouchHelper.SimpleCallback(
+
+    inner class NoteRVSwipeToDelete(private val adapter: NotesRVAdapter, private val icon: Drawable) : ItemTouchHelper.SimpleCallback(
             0,
             ItemTouchHelper.LEFT
     ) {
@@ -112,8 +118,10 @@ class NotesRVAdapter(var onItemClickListener: OnItemClickListener? = null) : Rec
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.getAdapterPosition();
-            //adapter.deleteItem(position);
+            adapter.onItemDeleteListener?.apply {
+                notifyItemRemoved(position)
+                onItemDelete(notes[position])
+            }
         }
     }
-
 }

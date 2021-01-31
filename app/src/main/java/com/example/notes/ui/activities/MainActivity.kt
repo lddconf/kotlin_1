@@ -1,19 +1,18 @@
 package com.example.notes.ui.activities
 
-import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.notes.R
 import com.example.notes.model.Note
 import com.example.notes.ui.adapters.NotesRVAdapter
 import com.example.notes.ui.adapters.OnItemClickListener
+import com.example.notes.ui.adapters.OnItemDeleteListener
 import com.example.notes.ui.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -33,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private fun initAppBar() {
         setSupportActionBar(main_toolbar)
         supportActionBar?.title = getString(R.string.app_name)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -60,15 +58,22 @@ class MainActivity : AppCompatActivity() {
         notes_list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter = NotesRVAdapter()
         notes_list.adapter = adapter
-        val swipeDelegate =
-                ContextCompat.getDrawable(applicationContext, R.drawable.ic_baseline_delete_forever_24)?.let {
-                    adapter.NoteRVSwipeToDelete(
-                            it
-                    )
+        val swipeItemTouchHelper =
+                ContextCompat.getDrawable(applicationContext, R.drawable.ic_baseline_delete_forever_24)?.let { icon ->
+                    ItemTouchHelper(adapter.NoteRVSwipeToDelete(
+                            adapter, icon
+                    ))
                 }
+        swipeItemTouchHelper?.attachToRecyclerView(notes_list)
         adapter.onItemClickListener = object : OnItemClickListener {
             override fun onItemClick(note: Note) {
                 startNoteEditor(note)
+            }
+        }
+
+        adapter.onItemDeleteListener = object : OnItemDeleteListener {
+            override fun onItemDelete(note: Note) {
+                viewModel.eraseNote(note)
             }
         }
     }

@@ -112,7 +112,5 @@ class NoteViewActivity : AppCompatActivity() {
                 }
             }
         }, SAVE_DELAY_MS)
-
     }
-
 }
