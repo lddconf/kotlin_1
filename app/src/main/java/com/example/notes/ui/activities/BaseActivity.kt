@@ -21,7 +21,7 @@ abstract class BaseActivity<T, VS : BaseViewState<T>> : AppCompatActivity() {
         }
     }
 
-    abstract fun renderData(data: T)
+    protected abstract fun renderData(data: T)
 
-    abstract fun renderError(error: Throwable)
+    protected abstract fun renderError(error: Throwable)
 }

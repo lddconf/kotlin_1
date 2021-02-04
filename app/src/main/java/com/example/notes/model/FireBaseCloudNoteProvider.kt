@@ -39,8 +39,6 @@ class FireBaseCloudNoteProvider : NetworkNoteProvider {
         } catch (e: Throwable) {
             value = NoteResult.Error(e)
         }
-
-
     }
 
     override fun getNoteById(uid: String): LiveData<NoteResult> =

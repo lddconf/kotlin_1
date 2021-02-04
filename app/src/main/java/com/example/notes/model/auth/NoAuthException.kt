@@ -1,4 +1,3 @@
 package com.example.notes.model.auth
 
-class NoAuthException : Throwable() {
-}
+class NoAuthException : Throwable()
