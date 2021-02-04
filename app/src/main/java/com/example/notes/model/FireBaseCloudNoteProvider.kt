@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.notes.model.auth.NoAuthException
+import com.example.notes.model.auth.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 
@@ -99,4 +100,12 @@ class FireBaseCloudNoteProvider : NetworkNoteProvider {
             .document(firebaseUser.uid)
             .collection(NOTES_FIRESTORE_COLLECTION)
     } ?: throw NoAuthException()
+
+
+    override fun getCurrentUser(): LiveData<User?> =
+        MutableLiveData<User?>().apply {
+            value = currentUser?.let { firebaseUser ->
+                User(firebaseUser.displayName ?: "", firebaseUser.email ?: "")
+            }
+        }
 }
