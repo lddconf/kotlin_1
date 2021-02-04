@@ -19,4 +19,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="add_new_note">Add note</string>
     <string name="note_pick_color">Pick color</string>
+    <string name="color_selection_title">Select color</string>
 </resources>
