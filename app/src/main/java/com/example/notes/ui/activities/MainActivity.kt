@@ -13,11 +13,13 @@ import com.example.notes.R
 import com.example.notes.model.Note
 import com.example.notes.ui.adapters.NotesRVAdapter
 import com.example.notes.ui.adapters.OnItemActionListener
+import com.example.notes.ui.dialogs.LogoutDialog
 import com.example.notes.ui.viewmodel.MainViewModel
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
+class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.LogoutListener {
     companion object {
         fun getStartIntent(context: Context) = Intent(context, MainActivity::class.java)
     }
@@ -25,13 +27,13 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
     override val viewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
+
     override val layoutResourceId: Int = R.layout.activity_main
 
     private lateinit var adapter: NotesRVAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         initAppBar()
         initNotesRV()
     }
@@ -55,10 +57,27 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
             startNoteEditor()
             true
         }
+        R.id.action_logout -> {
+            showLogoutDialog()
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item);
             false
         }
+    }
+
+    private fun showLogoutDialog() {
+        supportFragmentManager.findFragmentByTag(LogoutDialog.TAG) ?: LogoutDialog.createInstance()
+            .show(supportFragmentManager, LogoutDialog.TAG)
+    }
+
+    override fun onLogout() {
+        AuthUI.getInstance().signOut(this)
+            .addOnCompleteListener() {
+                startActivity(SplashActivity.getStartIntent(this))
+                finish()
+            }
     }
 
     private fun initNotesRV() {
@@ -87,8 +106,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
     }
 
     private fun startNoteEditor(note: Note? = null) {
-        val intent = NoteViewActivity.getStartIntent(applicationContext, note?.uid)
-        startActivity(intent)
+        startActivity(NoteViewActivity.getStartIntent(applicationContext, note?.uid))
     }
 
     override fun renderData(data: List<Note>?) {
@@ -98,11 +116,10 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
     }
 
     override fun renderError(error: Throwable) {
-        val snackbar = Snackbar.make(
+        Snackbar.make(
             findViewById(R.id.appbar_layout),
             error.message ?: "",
             Snackbar.LENGTH_LONG
-        )
-        snackbar.show()
+        ).show()
     }
 }

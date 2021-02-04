@@ -1,6 +1,7 @@
 package com.example.notes.ui.activities
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -44,7 +45,6 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
         }
     }
 
-
     override fun renderError(error: Throwable) {
         when (error) {
             is NoAuthException -> startLoginActivity()
@@ -56,7 +56,6 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
                 ).show()
         }
     }
-
 
     private fun startMainActivity() {
         startActivity(MainActivity.getStartIntent(this ))
@@ -83,5 +82,10 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
         if (requestCode == LOGIN_RC && resultCode != Activity.RESULT_OK) {
             finish()
         }
+    }
+
+
+    companion object {
+        fun getStartIntent(context: Context) = Intent(context, SplashActivity::class.java)
     }
 }

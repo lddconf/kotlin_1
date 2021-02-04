@@ -12,4 +12,5 @@ object NotesRepo {
     fun removeNoteWithId(uid: String) = networkNoteProvider.removeNoteWithId(uid)
 
     fun getCurrentUser() = networkNoteProvider.getCurrentUser()
+
 }
