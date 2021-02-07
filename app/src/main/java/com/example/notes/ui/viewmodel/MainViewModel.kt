@@ -1,24 +1,40 @@
 package com.example.notes.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.Observer
 import com.example.notes.model.Note
+import com.example.notes.model.NoteResult
 import com.example.notes.model.NotesRepo
 import com.example.notes.ui.activities.MainViewState
 
-class MainViewModel() : ViewModel() {
-    private val viewStateData = MutableLiveData<MainViewState>()
 
-    init {
-        NotesRepo.getNotes().observeForever {
-            viewStateData.value = viewStateData.value?.copy(notes = it) ?: MainViewState(it)
+class MainViewModel(private val repo: NotesRepo = NotesRepo) : BaseViewModel<List<Note>?, MainViewState>() {
+    private val notesObserver = object : Observer<NoteResult> {
+        override fun onChanged(t: NoteResult?) {
+            t?.apply {
+                when (this) {
+                    is NoteResult.Success<*> -> {
+                        viewStateLiveData.value = MainViewState(notes = this.data as? List<Note>)
+                    }
+                    is NoteResult.Error -> {
+                        viewStateLiveData.value = MainViewState(error = this.error)
+                    }
+                }
+            }
         }
     }
 
-    fun viewState(): LiveData<MainViewState> = viewStateData
+    private val repoNotes = repo.getNotes()
 
-    fun eraseNote(note: Note) {
-        NotesRepo.eraseNote(note)
+    init {
+        viewStateLiveData.value = MainViewState()
+        repoNotes.observeForever(notesObserver)
+    }
+
+    fun removeNoteWithId(uid: String) {
+        repo.removeNoteWithId(uid)
+    }
+
+    override fun onCleared() {
+        repoNotes.removeObserver(notesObserver)
     }
 }

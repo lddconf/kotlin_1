@@ -2,39 +2,44 @@ package com.example.notes.ui.activities
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
 import android.view.MenuItem
-import androidx.lifecycle.ViewModel
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import com.example.notes.R
+import com.example.notes.*
 import com.example.notes.model.Note
 import com.example.notes.ui.viewmodel.NoteViewModel
+import com.google.android.material.snackbar.Snackbar
+import com.thebluealliance.spectrum.SpectrumDialog
 import kotlinx.android.synthetic.main.activity_note_view.*
-import kotlinx.android.synthetic.main.note_preview_layout.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NoteViewActivity : AppCompatActivity() {
+class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     companion object {
         const val EXTRA_NOTE = "NoteViewActivity.extra.NOTE"
         const val SAVE_DELAY_MS = 3.toLong()
-        fun getStartIntent(context: Context, note: Note?): Intent {
+        fun getStartIntent(context: Context, uid: String?): Intent {
             val intent = Intent(context, NoteViewActivity::class.java)
-            intent.putExtra(EXTRA_NOTE, note)
+            intent.putExtra(EXTRA_NOTE, uid)
             return intent
         }
     }
 
     private var note: Note? = null
-    private lateinit var viewModel: NoteViewModel
+
+    override val viewModel: NoteViewModel by lazy {
+        ViewModelProvider(this).get(NoteViewModel::class.java)
+    }
+    override val layoutResourceId: Int = R.layout.activity_note_view
+
+
     private val onTextChangedListener = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
         }
@@ -49,14 +54,12 @@ class NoteViewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_note_view)
 
         setupActionBar()
-        note = intent.getParcelableExtra(EXTRA_NOTE)
-        initView()
-
-        viewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
-
+        val uid = intent.getStringExtra(EXTRA_NOTE)
+        uid?.let {
+            viewModel.loadNote(uid)
+        }
         title_editor_text.addTextChangedListener(onTextChangedListener)
         body_editor_text.addTextChangedListener(onTextChangedListener)
     }
@@ -65,8 +68,17 @@ class NoteViewActivity : AppCompatActivity() {
     private fun initView() {
         supportActionBar?.title = getString(R.string.new_note_title)
         note?.apply {
-            supportActionBar?.title = SimpleDateFormat(getString(R.string.date_format), Locale.getDefault()).format(lastChanged)
-            supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
+            supportActionBar?.title =
+                SimpleDateFormat(getString(R.string.date_format), Locale.getDefault()).format(
+                    lastChanged
+                )
+            supportActionBar?.setBackgroundDrawable(
+                ColorDrawable(
+                    ContextCompat.getColor(applicationContext, color.toColorResId())
+                )
+            )
+
+
             title_editor_text?.setText(title)
             body_editor_text?.setText(text)
         }
@@ -82,35 +94,67 @@ class NoteViewActivity : AppCompatActivity() {
             onBackPressed()
             true
         }
+        R.id.action_color_pick -> {
+            showColorPickerDialog()
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        note = savedInstanceState.getParcelable(EXTRA_NOTE)
-        initView()
+    private fun showColorPickerDialog() {
+        val colorDialog = SpectrumDialog.Builder(this)
+        colorDialog.setColors(R.array.predefined_colors)
+
+        if (note == null) {
+            note = Note()
+        }
+
+        note?.let {
+            colorDialog.setSelectedColor(it.color.toColorResId())
+            colorDialog.setOnColorSelectedListener { positiveResult, color ->
+                if (positiveResult) {
+                    val newColor = colorToPredefinedColor(applicationContext, color, Note().color)
+                    note?.color = newColor
+                    initView()
+                }
+            }
+        }
+        colorDialog.build()?.show(supportFragmentManager, "Select color")
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelable(EXTRA_NOTE, note)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.note_editor_menu, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun saveNote() = title_editor_text.text?.let {
-        Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
-            override fun run() {
-                note = note?.copy(
-                        title = title_editor_text.text.toString(),
-                        text = body_editor_text.text.toString(),
-                        lastChanged = Date()
-                )
+        Handler(Looper.getMainLooper()).postDelayed({
+            note = note?.copy(
+                title = title_editor_text.text.toString(),
+                text = body_editor_text.text.toString(),
+                lastChanged = Date()
+            ) ?: Note(
+                title = title_editor_text.text.toString(),
+                text = body_editor_text.text.toString(),
+                lastChanged = Date()
+            )
 
-                note?.apply {
-                    viewModel.saveChanges(this)
-                }
+            note?.let {
+                viewModel.saveChanges(it)
             }
         }, SAVE_DELAY_MS)
+    }
+
+    override fun renderData(data: Note?) {
+        note = data
+        initView()
+    }
+
+    override fun renderError(error: Throwable) {
+        val snackbar =
+            Snackbar.make(findViewById(layoutResourceId), error.message ?: "", Snackbar.LENGTH_LONG)
+        snackbar.show()
     }
 }

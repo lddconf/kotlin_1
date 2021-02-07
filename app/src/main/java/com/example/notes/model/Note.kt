@@ -1,17 +1,16 @@
 package com.example.notes.model
 
 import android.os.Parcelable
-import com.example.notes.toRGBColor
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
-data class Note (
-    val title: String,
-    val text: String,
-    val uid : String = UUID.randomUUID().toString(),
+data class Note(
+    val title: String = "",
+    val text: String = "",
+    val uid: String = UUID.randomUUID().toString(),
     val lastChanged: Date = Date(),
-    val color: Int = PredefinedColor.DARK_BLUE.toRGBColor()
+    var color: PredefinedColor = PredefinedColor.RED
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
