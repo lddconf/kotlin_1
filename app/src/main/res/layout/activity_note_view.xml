@@ -55,4 +55,9 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.example.notes.ui.customviews.CircleColorPicker
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:colors="@array/predefined_colors"
+        />
 </LinearLayout>
