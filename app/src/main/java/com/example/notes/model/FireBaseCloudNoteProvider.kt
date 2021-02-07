@@ -12,15 +12,17 @@ import com.google.firebase.firestore.*
 private const val NOTES_FIRESTORE_COLLECTION = "geo_notes"
 private const val USERS_FIRESTORE_COLLECTION = "user_notes"
 
-class FireBaseCloudNoteProvider : NetworkNoteProvider {
+class FireBaseCloudNoteProvider(
+    private val db: FirebaseFirestore,
+    private val firebaseAuth: FirebaseAuth
+) : NetworkNoteProvider {
 
     companion object {
         private val TAG = FireBaseCloudNoteProvider::class.java.simpleName
     }
 
-    private val db = FirebaseFirestore.getInstance()
     private val currentUser
-        get() = FirebaseAuth.getInstance().currentUser
+        get() = firebaseAuth.currentUser
 
     override fun subscribeToNotes(): LiveData<NoteResult> = MutableLiveData<NoteResult>().apply {
         try {

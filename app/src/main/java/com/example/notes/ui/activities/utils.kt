@@ -41,3 +41,5 @@ fun colorToPredefinedColor(
     Note.PredefinedColor.VIOLET.toColor(context) -> Note.PredefinedColor.VIOLET
     else -> defaultColor
 }
+
+fun Context.dip(value: Int) = (value* resources.displayMetrics.density).toInt()

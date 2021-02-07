@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.thebluealliance.spectrum.SpectrumDialog
 import java.text.SimpleDateFormat
 import java.util.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     companion object {
@@ -34,9 +35,7 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
 
     private var note: Note? = null
 
-    override val viewModel: NoteViewModel by lazy {
-        ViewModelProvider(this).get(NoteViewModel::class.java)
-    }
+    override val viewModel: NoteViewModel by viewModel()
 
     override val layoutResourceId: Int = R.layout.activity_note_view
 

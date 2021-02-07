@@ -7,7 +7,7 @@ import com.example.notes.model.NotesRepo
 import com.example.notes.ui.activities.MainViewState
 
 
-class MainViewModel(private val repo: NotesRepo = NotesRepo) : BaseViewModel<List<Note>?, MainViewState>() {
+class MainViewModel(private val repo: NotesRepo) : BaseViewModel<List<Note>?, MainViewState>() {
     private val notesObserver = Observer<NoteResult> { t ->
         t?.apply {
             when (this) {
@@ -30,16 +30,16 @@ class MainViewModel(private val repo: NotesRepo = NotesRepo) : BaseViewModel<Lis
         repoNotes.observeForever(notesObserver)
     }
 
-    fun removeNote(uid: String) {
+    fun deleteNote(uid: String) {
         (viewStateLiveData.value as MainViewState).apply {
             recentDeletedNote = this.notes?.filter { note ->
                 note.uid == uid
             }?.firstOrNull()
         }
-        repo.removeNote(uid)
+        repo.deleteNote(uid)
     }
 
-    fun undoLastNoteRemove() {
+    fun undoLastDeletedNote() {
         recentDeletedNote?.let { note ->
             repo.saveNote(note)
         }

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.notes.R
@@ -18,15 +17,14 @@ import com.example.notes.ui.dialogs.LogoutDialog
 import com.example.notes.ui.viewmodel.MainViewModel
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.LogoutListener {
     companion object {
         fun getStartIntent(context: Context) = Intent(context, MainActivity::class.java)
     }
 
-    override val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
-    }
+    override val viewModel: MainViewModel by viewModel()
 
     override val layoutResourceId: Int = R.layout.activity_main
 
@@ -104,14 +102,14 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
             }
 
             override fun onItemDelete(note: Note) {
-                viewModel.removeNote(note.uid)
+                viewModel.deleteNote(note.uid)
                 Snackbar.make(
                     ui.mainLayout,
                     getString(R.string.action_recover_deleted_note),
                     Snackbar.LENGTH_LONG
                 )
                     .setAction(getString(R.string.snckbar_recover_btn)) {
-                        viewModel.undoLastNoteRemove()
+                        viewModel.undoLastDeletedNote()
                     }
                     .show()
 

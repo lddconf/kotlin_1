@@ -4,7 +4,7 @@ import com.example.notes.model.NotesRepo
 import com.example.notes.model.auth.NoAuthException
 import com.example.notes.ui.activities.SplashViewState
 
-class SplashViewModel(private val repo: NotesRepo = NotesRepo) :
+class SplashViewModel(private val repo: NotesRepo) :
     BaseViewModel<Boolean?, SplashViewState>() {
     fun requestUser() {
         repo.getCurrentUser().observeForever { user ->

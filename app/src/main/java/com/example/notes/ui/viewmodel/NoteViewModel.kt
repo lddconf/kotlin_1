@@ -8,7 +8,7 @@ import com.example.notes.model.NotesRepo
 import com.example.notes.ui.activities.NoteViewState
 import java.sql.Struct
 
-class NoteViewModel(private val repo: NotesRepo = NotesRepo) :
+class NoteViewModel(private val repo: NotesRepo) :
     BaseViewModel<Note?, NoteViewState>() {
     private var currentNote: Note? = null
 
