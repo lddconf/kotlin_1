@@ -9,7 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewbinding.ViewBinding
 import com.example.notes.R
+import com.example.notes.databinding.ActivityMainBinding
 import com.example.notes.model.Note
 import com.example.notes.ui.adapters.NotesRVAdapter
 import com.example.notes.ui.adapters.OnItemActionListener
@@ -17,7 +19,6 @@ import com.example.notes.ui.dialogs.LogoutDialog
 import com.example.notes.ui.viewmodel.MainViewModel
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.LogoutListener {
     companion object {
@@ -30,6 +31,10 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
 
     override val layoutResourceId: Int = R.layout.activity_main
 
+    override val ui: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
+
     private lateinit var adapter: NotesRVAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +44,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
     }
 
     private fun initAppBar() {
-        setSupportActionBar(main_toolbar)
+        setSupportActionBar( ui.mainToolbar )
         supportActionBar?.title = getString(R.string.app_name)
     }
 
@@ -81,9 +86,9 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
     }
 
     private fun initNotesRV() {
-        notes_list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        ui.notesList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter = NotesRVAdapter()
-        notes_list.adapter = adapter
+        ui.notesList.adapter = adapter
         val swipeItemTouchHelper =
             ContextCompat.getDrawable(applicationContext, R.drawable.ic_baseline_delete_forever_24)
                 ?.let { icon ->
@@ -93,7 +98,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
                         )
                     )
                 }
-        swipeItemTouchHelper?.attachToRecyclerView(notes_list)
+        swipeItemTouchHelper?.attachToRecyclerView(ui.notesList)
         adapter.onItemActionListener = object : OnItemActionListener {
             override fun onItemClick(note: Note) {
                 startNoteEditor(note)
@@ -117,7 +122,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
 
     override fun renderError(error: Throwable) {
         Snackbar.make(
-            findViewById(R.id.appbar_layout),
+            ui.appbarLayout,
             error.message ?: "",
             Snackbar.LENGTH_LONG
         ).show()

@@ -13,11 +13,11 @@ import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.*
+import com.example.notes.databinding.ActivityNoteViewBinding
 import com.example.notes.model.Note
 import com.example.notes.ui.viewmodel.NoteViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.thebluealliance.spectrum.SpectrumDialog
-import kotlinx.android.synthetic.main.activity_note_view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,8 +37,12 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     override val viewModel: NoteViewModel by lazy {
         ViewModelProvider(this).get(NoteViewModel::class.java)
     }
+
     override val layoutResourceId: Int = R.layout.activity_note_view
 
+    override val ui : ActivityNoteViewBinding by lazy {
+        ActivityNoteViewBinding.inflate(layoutInflater)
+    }
 
     private val onTextChangedListener = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -60,8 +64,8 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
         uid?.let { id ->
             viewModel.loadNote(id)
         }
-        title_editor_text.addTextChangedListener(onTextChangedListener)
-        body_editor_text.addTextChangedListener(onTextChangedListener)
+        ui.titleEditorText.addTextChangedListener(onTextChangedListener)
+        ui.bodyEditorText.addTextChangedListener(onTextChangedListener)
     }
 
 
@@ -78,13 +82,13 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
                     )
                 )
             }
-            title_editor_text?.setText(note.title)
-            body_editor_text?.setText(note.text)
+            ui.titleEditorText?.setText(note.title)
+            ui.bodyEditorText?.setText(note.text)
         }
     }
 
     private fun setupActionBar() {
-        setSupportActionBar(note_toolbar)
+        setSupportActionBar(ui.noteToolbar)
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             title = getString(R.string.new_note_title)
@@ -136,15 +140,15 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun saveNote() = title_editor_text.text?.let {
+    private fun saveNote() = ui.titleEditorText.text?.let {
         Handler(Looper.getMainLooper()).postDelayed({
             note = note?.copy(
-                title = title_editor_text.text.toString(),
-                text = body_editor_text.text.toString(),
+                title = ui.titleEditorText.text.toString(),
+                text = ui.bodyEditorText.text.toString(),
                 lastChanged = Date()
             ) ?: Note(
-                title = title_editor_text.text.toString(),
-                text = body_editor_text.text.toString(),
+                title = ui.titleEditorText.text.toString(),
+                text = ui.bodyEditorText.text.toString(),
                 lastChanged = Date(),
             )
             note?.let { note ->

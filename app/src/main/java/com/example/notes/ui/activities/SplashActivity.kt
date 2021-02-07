@@ -8,11 +8,11 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.R
+import com.example.notes.databinding.ActivitySplashBinding
 import com.example.notes.model.auth.NoAuthException
 import com.example.notes.ui.viewmodel.SplashViewModel
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 
 private const val LOGIN_RC = 782
 private const val REQUEST_DELAY_MS = 1000L
@@ -25,6 +25,10 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
             }
 
     override val layoutResourceId: Int = R.layout.activity_splash
+
+    override val ui : ActivitySplashBinding by lazy {
+        ActivitySplashBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +54,7 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
             is NoAuthException -> startLoginActivity()
             else ->
                 Snackbar.make(
-                    findViewById(R.id.splash_layout),
+                    ui.splashLayout,
                     error.message.toString(),
                     Snackbar.LENGTH_LONG
                 ).show()
