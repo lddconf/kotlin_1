@@ -4,15 +4,12 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.Dimension
 import androidx.annotation.Dimension.DP
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import com.example.notes.R
 import com.example.notes.dip
-import com.firebase.ui.auth.ui.AppCompatBase
-import java.lang.Integer.min
 
 @Dimension(unit = DP)
 private const val defStrokeWidthDp = 1
@@ -68,16 +65,18 @@ class CircleColorPicker @JvmOverloads constructor(
     var colors = mutableListOf<Int>()
         set(value) {
             field = value
+            regions.clear()
             invalidate()
         }
 
-    var selectedColor : Int? = null
+    var selectedColor: Int? = null
         set(value) {
             field = value
             invalidate()
         }
 
-    private var center : Pair<Int, Int> = 0 to 0
+    private var center: Pair<Int, Int> = 0 to 0
+    private var regions = mutableMapOf<Int, Region>()
 
     private var outerRect =
         RectF(0f + defPaddingDp, 0f + defPaddingDp, 100f - defPaddingDp, 100f - defPaddingDp)
@@ -90,12 +89,13 @@ class CircleColorPicker @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         val size = if (w < h) w else h
+
         outerRect =
             RectF(
-                context.dip(defPaddingDp).toFloat(),
-                context.dip(defPaddingDp).toFloat(),
-                (size - context.dip(defPaddingDp)).toFloat(),
-                (size - context.dip(defPaddingDp)).toFloat()
+                center.first - size / 2 + context.dip(defPaddingDp).toFloat(),
+                center.second - size / 2 + context.dip(defPaddingDp).toFloat(),
+                (center.first + size / 2 - context.dip(defPaddingDp)).toFloat(),
+                (center.second + size / 2 - context.dip(defPaddingDp)).toFloat()
             )
         innerRect =
             RectF(
@@ -104,6 +104,11 @@ class CircleColorPicker @JvmOverloads constructor(
                 outerRect.right - context.dip(defWidthDp),
                 outerRect.bottom - context.dip(defWidthDp)
             )
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        center = measuredWidth / 2 to measuredHeight / 2
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -116,6 +121,8 @@ class CircleColorPicker @JvmOverloads constructor(
 
         val arcSweepDegree = 360.toFloat() / colors.size
         var arcOffSetDegree = 0.toFloat()
+
+        val rect: RectF = RectF()
         canvas?.apply {
             val path = Path()
             colors.forEach { color ->
@@ -124,12 +131,24 @@ class CircleColorPicker @JvmOverloads constructor(
                 path.arcTo(innerRect, arcOffSetDegree + arcSweepDegree, -arcSweepDegree)
                 path.close()
 
+                path.computeBounds(rect, false)
+                val region = Region()
+                region.setPath(
+                    path, Region(
+                        rect.left.toInt(),
+                        rect.top.toInt(),
+                        rect.right.toInt(),
+                        rect.bottom.toInt()
+                    )
+                )
+                regions[color] = region
+
                 canvas.drawPath(path, fillArcPaint)
                 fillArcPaint.color = color
 
                 strokeArcPaint.strokeWidth =
                     selectedColor?.let {
-                        if ( color == it ) {
+                        if (color == it) {
                             context.dip(selectedStrokeWidthDp).toFloat()
                         } else {
                             context.dip(strokeWidthDp).toFloat()
@@ -158,6 +177,7 @@ class CircleColorPicker @JvmOverloads constructor(
                 val reqColors = typedArray.resources.getIntArray(colorsId)
                 reqColors.forEach {
                     colors.add(it)
+                    regions[it] = Region()
                 }
             } else {
                 //No colors, no selection
@@ -165,6 +185,24 @@ class CircleColorPicker @JvmOverloads constructor(
             }
         }
         typedArray.recycle()
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        event?.let {
+            if ( event.action == MotionEvent.ACTION_DOWN ) {
+                val x = event.getX().toInt()
+                val y = event.getY().toInt()
+                //Scan for color
+                regions.forEach{
+                    if ( it.value.contains(x,y)) {
+                        selectedColor = it.key
+                        invalidate()
+                        return true
+                    }
+                }
+            }
+        }
+        return super.onTouchEvent(event)
     }
 
     init {
