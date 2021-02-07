@@ -57,8 +57,8 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
 
         setupActionBar()
         val uid = intent.getStringExtra(EXTRA_NOTE)
-        uid?.let {
-            viewModel.loadNote(uid)
+        uid?.let { id ->
+            viewModel.loadNote(id)
         }
         title_editor_text.addTextChangedListener(onTextChangedListener)
         body_editor_text.addTextChangedListener(onTextChangedListener)
@@ -66,27 +66,34 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
 
 
     private fun initView() {
-        supportActionBar?.title = getString(R.string.new_note_title)
-        note?.apply {
-            supportActionBar?.title =
-                SimpleDateFormat(getString(R.string.date_format), Locale.getDefault()).format(
-                    lastChanged
+        note?.let { note ->
+            supportActionBar?.apply {
+                title =
+                    SimpleDateFormat(getString(R.string.date_format), Locale.getDefault()).format(
+                        note.lastChanged
+                    )
+                setBackgroundDrawable(
+                    ColorDrawable(
+                        ContextCompat.getColor(applicationContext, note.color.toColorResId())
+                    )
                 )
-            supportActionBar?.setBackgroundDrawable(
-                ColorDrawable(
-                    ContextCompat.getColor(applicationContext, color.toColorResId())
-                )
-            )
-
-
-            title_editor_text?.setText(title)
-            body_editor_text?.setText(text)
+            }
+            title_editor_text?.setText(note.title)
+            body_editor_text?.setText(note.text)
         }
     }
 
     private fun setupActionBar() {
         setSupportActionBar(note_toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            title = getString(R.string.new_note_title)
+            setBackgroundDrawable(
+                ColorDrawable(
+                    ContextCompat.getColor(applicationContext, Note().color.toColorResId())
+                )
+            )
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
@@ -111,17 +118,17 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
             note = Note()
         }
 
-        note?.let {
-            colorDialog.setSelectedColor(it.color.toColorResId())
+        note?.let { note ->
+            colorDialog.setSelectedColor(note.color.toColorResId())
             colorDialog.setOnColorSelectedListener { positiveResult, color ->
                 if (positiveResult) {
                     val newColor = colorToPredefinedColor(applicationContext, color, Note().color)
-                    note?.color = newColor
+                    note.color = newColor
                     initView()
                 }
             }
         }
-        colorDialog.build()?.show(supportFragmentManager, "Select color")
+        colorDialog.build()?.show(supportFragmentManager, getString(R.string.color_selection_title))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -138,11 +145,10 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
             ) ?: Note(
                 title = title_editor_text.text.toString(),
                 text = body_editor_text.text.toString(),
-                lastChanged = Date()
+                lastChanged = Date(),
             )
-
-            note?.let {
-                viewModel.saveChanges(it)
+            note?.let { note ->
+                viewModel.saveChanges(note)
             }
         }, SAVE_DELAY_MS)
     }
@@ -153,8 +159,7 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     }
 
     override fun renderError(error: Throwable) {
-        val snackbar =
-            Snackbar.make(findViewById(layoutResourceId), error.message ?: "", Snackbar.LENGTH_LONG)
-        snackbar.show()
+        Snackbar.make(findViewById(layoutResourceId), error.message ?: "", Snackbar.LENGTH_LONG)
+            .show()
     }
 }

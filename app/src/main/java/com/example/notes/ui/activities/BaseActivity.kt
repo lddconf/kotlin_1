@@ -13,15 +13,15 @@ abstract class BaseActivity<T, VS : BaseViewState<T>> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(layoutResourceId)
 
-        viewModel.viewState().observe(this, { value ->
-            value?.let {
-                if (it.data != null) renderData(it.data)
-                if (it.error != null) renderError(it.error)
+        viewModel.viewState().observe(this) { value ->
+            value?.apply {
+                data?.let { renderData(it) }
+                error?.let { renderError(it) }
             }
-        })
+        }
     }
 
-    abstract fun renderData(data: T)
+    protected abstract fun renderData(data: T)
 
-    abstract fun renderError(error: Throwable)
+    protected abstract fun renderError(error: Throwable)
 }

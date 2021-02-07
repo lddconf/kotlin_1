@@ -8,7 +8,8 @@ import com.example.notes.model.NotesRepo
 import com.example.notes.ui.activities.NoteViewState
 import java.sql.Struct
 
-class NoteViewModel(private val repo: NotesRepo = NotesRepo) : BaseViewModel<Note?,NoteViewState>() {
+class NoteViewModel(private val repo: NotesRepo = NotesRepo) :
+    BaseViewModel<Note?, NoteViewState>() {
     private var currentNote: Note? = null
 
     fun saveChanges(note: Note) {
@@ -16,24 +17,22 @@ class NoteViewModel(private val repo: NotesRepo = NotesRepo) : BaseViewModel<Not
     }
 
     override fun onCleared() {
-        currentNote?.let {
-            repo.saveNote(it)
+        currentNote?.let { note ->
+            repo.saveNote(note)
         }
 
     }
 
-    fun loadNote( uid : String ) {
-        repo.getNoteById(uid).observeForever ( object : Observer<NoteResult> {
-            override fun onChanged(t: NoteResult?) {
-                t.apply {
-                    when(this) {
-                        is NoteResult.Success<*> ->
-                            viewStateLiveData.value = NoteViewState(this.data as? Note)
-                        is NoteResult.Error ->
-                            viewStateLiveData.value = NoteViewState(error = this.error)
-                    }
+    fun loadNote(uid: String) {
+        repo.getNoteById(uid).observeForever { observer ->
+            observer.apply {
+                when (this) {
+                    is NoteResult.Success<*> ->
+                        viewStateLiveData.value = NoteViewState(this.data as? Note)
+                    is NoteResult.Error ->
+                        viewStateLiveData.value = NoteViewState(error = this.error)
                 }
             }
-        })
+        }
     }
 }
