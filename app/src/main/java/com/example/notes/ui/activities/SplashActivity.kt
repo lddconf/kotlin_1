@@ -30,10 +30,6 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
         ActivitySplashBinding.inflate(layoutInflater)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onResume() {
         super.onResume()
         Handler(Looper.getMainLooper())

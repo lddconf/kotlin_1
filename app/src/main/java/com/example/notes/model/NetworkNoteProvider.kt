@@ -10,7 +10,7 @@ interface NetworkNoteProvider {
 
     fun saveNote(note: Note): LiveData<NoteResult>
 
-    fun removeNoteWithId(uid: String): LiveData<NoteResult>
+    fun removeNote(uid: String): LiveData<NoteResult>
 
     fun getCurrentUser() : LiveData<User?>
 }

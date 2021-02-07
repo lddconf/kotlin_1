@@ -5,9 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -74,7 +72,7 @@ class NotesRVAdapter(
         0,
         ItemTouchHelper.LEFT
     ) {
-        val background = ColorDrawable(Color.RED);
+        private val background = ColorDrawable(Color.RED);
 
         override fun onChildDraw(
             c: Canvas,

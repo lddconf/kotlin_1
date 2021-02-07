@@ -26,4 +26,6 @@
     <string name="logout_dlg_ok_btn_title">Logout</string>
     <string name="logout_dlg_no_btn_title">Cancel</string>
     <string name="geonotes_app_title">GeoNotes App</string>
+    <string name="action_recover_deleted_note">Dou you want to recover deleted note?</string>
+    <string name="snckbar_recover_btn">Recover</string>
 </resources>

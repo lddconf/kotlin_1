@@ -78,7 +78,7 @@ class FireBaseCloudNoteProvider : NetworkNoteProvider {
             }
         }
 
-    override fun removeNoteWithId(uid: String): LiveData<NoteResult> =
+    override fun removeNote(uid: String): LiveData<NoteResult> =
         MutableLiveData<NoteResult>().apply {
             try {
                 getUserNotesCollection().document(uid).delete().addOnSuccessListener {

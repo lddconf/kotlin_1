@@ -40,7 +40,7 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
 
     override val layoutResourceId: Int = R.layout.activity_note_view
 
-    override val ui : ActivityNoteViewBinding by lazy {
+    override val ui: ActivityNoteViewBinding by lazy {
         ActivityNoteViewBinding.inflate(layoutInflater)
     }
 
@@ -82,8 +82,8 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
                     )
                 )
             }
-            ui.titleEditorText?.setText(note.title)
-            ui.bodyEditorText?.setText(note.text)
+            ui.titleEditorText.setText(note.title)
+            ui.bodyEditorText.setText(note.text)
         }
     }
 
@@ -101,17 +101,9 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        android.R.id.home -> {
-            onBackPressed()
-            true
-        }
-        R.id.action_color_pick -> {
-            showColorPickerDialog()
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
+        android.R.id.home -> onBackPressed().let { true }
+        R.id.action_color_pick -> showColorPickerDialog().let { true }
+        else -> super.onOptionsItemSelected(item)
     }
 
     private fun showColorPickerDialog() {
@@ -135,10 +127,9 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
         colorDialog.build()?.show(supportFragmentManager, getString(R.string.color_selection_title))
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.note_editor_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean =
+        menuInflater.inflate(R.menu.note_editor_menu, menu).let { true }
+
 
     private fun saveNote() = ui.titleEditorText.text?.let {
         Handler(Looper.getMainLooper()).postDelayed({
@@ -163,7 +154,8 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     }
 
     override fun renderError(error: Throwable) {
-        Snackbar.make(findViewById(layoutResourceId), error.message ?: "", Snackbar.LENGTH_LONG)
+        Snackbar
+            .make(ui.noteLinearLayout, error.message ?: "", Snackbar.LENGTH_LONG)
             .show()
     }
 }

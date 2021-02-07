@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewbinding.ViewBinding
 import com.example.notes.R
 import com.example.notes.databinding.ActivityMainBinding
 import com.example.notes.model.Note
@@ -44,7 +43,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
     }
 
     private fun initAppBar() {
-        setSupportActionBar( ui.mainToolbar )
+        setSupportActionBar(ui.mainToolbar)
         supportActionBar?.title = getString(R.string.app_name)
     }
 
@@ -105,7 +104,18 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
             }
 
             override fun onItemDelete(note: Note) {
-                viewModel.removeNoteWithId(note.uid)
+                viewModel.removeNote(note.uid)
+                Snackbar.make(
+                    ui.mainLayout,
+                    getString(R.string.action_recover_deleted_note),
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction(getString(R.string.snckbar_recover_btn)) {
+                        viewModel.undoLastNoteRemove()
+                    }
+                    .show()
+
+                //
             }
         }
     }

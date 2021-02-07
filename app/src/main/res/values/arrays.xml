@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="predefined_colors">
-        <item>@color/white</item>
+        <item>@color/note_white</item>
         <item>@color/red</item>
         <item>@color/orange</item>
         <item>@color/yellow</item>
