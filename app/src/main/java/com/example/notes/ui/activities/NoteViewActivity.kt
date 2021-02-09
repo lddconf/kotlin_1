@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.notes.*
 import com.example.notes.databinding.ActivityNoteViewBinding
 import com.example.notes.model.Note
+import com.example.notes.ui.dialogs.ColorSelectionDialog
 import com.example.notes.ui.viewmodel.NoteViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.thebluealliance.spectrum.SpectrumDialog
@@ -67,7 +68,6 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
         ui.bodyEditorText.addTextChangedListener(onTextChangedListener)
     }
 
-
     private fun initView() {
         note?.let { note ->
             supportActionBar?.apply {
@@ -105,26 +105,29 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun showColorPickerDialog() {
-        val colorDialog = SpectrumDialog.Builder(this)
-        colorDialog.setColors(R.array.predefined_colors)
 
+    private fun showColorPickerDialog() {
+        val colorDialog = ColorSelectionDialog()
+        colorDialog.onColorSelectedListener = { color ->
+            applyNoteColor(color)
+        }
+        colorDialog.selectedColor = note?.let {  it.color?.toColor(this) } ?: Note().color.toColor(this)
+        colorDialog.show(supportFragmentManager, getString(R.string.color_selection_title))
+    }
+
+    fun applyNoteColor(color : Int?) {
         if (note == null) {
             note = Note()
         }
-
         note?.let { note ->
-            colorDialog.setSelectedColor(note.color.toColorResId())
-            colorDialog.setOnColorSelectedListener { positiveResult, color ->
-                if (positiveResult) {
-                    val newColor = colorToPredefinedColor(applicationContext, color, Note().color)
-                    note.color = newColor
-                    initView()
-                }
+            color?.let { color ->
+                val newColor = colorToPredefinedColor(applicationContext, color, Note().color)
+                note.color = newColor
+                initView()
             }
         }
-        colorDialog.build()?.show(supportFragmentManager, getString(R.string.color_selection_title))
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean =
         menuInflater.inflate(R.menu.note_editor_menu, menu).let { true }

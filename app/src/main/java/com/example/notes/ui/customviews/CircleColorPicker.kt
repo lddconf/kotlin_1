@@ -29,7 +29,6 @@ class CircleColorPicker @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-
     var strokeWidthDp: Int = defStrokeWidthDp
         set(value) {
             field = value
@@ -71,9 +70,16 @@ class CircleColorPicker @JvmOverloads constructor(
 
     var selectedColor: Int? = null
         set(value) {
-            field = value
-            invalidate()
+            if ( value != field ) {
+                field = value
+                invalidate()
+                onSelectedColorChangedListener?.apply {
+                    this(value)
+                }
+            }
         }
+
+    var onSelectedColorChangedListener : ((Int?) -> Unit)? = null
 
     private var center: Pair<Int, Int> = 0 to 0
     private var regions = mutableMapOf<Int, Region>()
@@ -143,8 +149,8 @@ class CircleColorPicker @JvmOverloads constructor(
                 )
                 regions[color] = region
 
-                canvas.drawPath(path, fillArcPaint)
                 fillArcPaint.color = color
+                canvas.drawPath(path, fillArcPaint)
 
                 strokeArcPaint.strokeWidth =
                     selectedColor?.let {
@@ -179,6 +185,7 @@ class CircleColorPicker @JvmOverloads constructor(
                     colors.add(it)
                     regions[it] = Region()
                 }
+                selectedColor = colors.first()
             } else {
                 //No colors, no selection
                 colors.add((background as ColorDrawable).color)
@@ -195,8 +202,12 @@ class CircleColorPicker @JvmOverloads constructor(
                 //Scan for color
                 regions.forEach{
                     if ( it.value.contains(x,y)) {
+                        if ( selectedColor == it.key ) return false
                         selectedColor = it.key
                         invalidate()
+                        onSelectedColorChangedListener?.apply {
+                            this(it.key)
+                        }
                         return true
                     }
                 }
