@@ -13,13 +13,15 @@ import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.*
+import com.example.notes.databinding.ActivityNoteViewBinding
 import com.example.notes.model.Note
+import com.example.notes.ui.dialogs.ColorSelectionDialog
 import com.example.notes.ui.viewmodel.NoteViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.thebluealliance.spectrum.SpectrumDialog
-import kotlinx.android.synthetic.main.activity_note_view.*
 import java.text.SimpleDateFormat
 import java.util.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     companion object {
@@ -34,11 +36,13 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
 
     private var note: Note? = null
 
-    override val viewModel: NoteViewModel by lazy {
-        ViewModelProvider(this).get(NoteViewModel::class.java)
-    }
+    override val viewModel: NoteViewModel by viewModel()
+
     override val layoutResourceId: Int = R.layout.activity_note_view
 
+    override val ui: ActivityNoteViewBinding by lazy {
+        ActivityNoteViewBinding.inflate(layoutInflater)
+    }
 
     private val onTextChangedListener = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -57,92 +61,91 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
 
         setupActionBar()
         val uid = intent.getStringExtra(EXTRA_NOTE)
-        uid?.let {
-            viewModel.loadNote(uid)
+        uid?.let { id ->
+            viewModel.loadNote(id)
         }
-        title_editor_text.addTextChangedListener(onTextChangedListener)
-        body_editor_text.addTextChangedListener(onTextChangedListener)
+        ui.titleEditorText.addTextChangedListener(onTextChangedListener)
+        ui.bodyEditorText.addTextChangedListener(onTextChangedListener)
     }
 
-
     private fun initView() {
-        supportActionBar?.title = getString(R.string.new_note_title)
-        note?.apply {
-            supportActionBar?.title =
-                SimpleDateFormat(getString(R.string.date_format), Locale.getDefault()).format(
-                    lastChanged
+        note?.let { note ->
+            supportActionBar?.apply {
+                title =
+                    SimpleDateFormat(getString(R.string.date_format), Locale.getDefault()).format(
+                        note.lastChanged
+                    )
+                setBackgroundDrawable(
+                    ColorDrawable(
+                        ContextCompat.getColor(applicationContext, note.color.toColorResId())
+                    )
                 )
-            supportActionBar?.setBackgroundDrawable(
-                ColorDrawable(
-                    ContextCompat.getColor(applicationContext, color.toColorResId())
-                )
-            )
-
-
-            title_editor_text?.setText(title)
-            body_editor_text?.setText(text)
+            }
+            ui.titleEditorText.setText(note.title)
+            ui.bodyEditorText.setText(note.text)
         }
     }
 
     private fun setupActionBar() {
-        setSupportActionBar(note_toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(ui.noteToolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            title = getString(R.string.new_note_title)
+            setBackgroundDrawable(
+                ColorDrawable(
+                    ContextCompat.getColor(applicationContext, Note().color.toColorResId())
+                )
+            )
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        android.R.id.home -> {
-            onBackPressed()
-            true
-        }
-        R.id.action_color_pick -> {
-            showColorPickerDialog()
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
+        android.R.id.home -> onBackPressed().let { true }
+        R.id.action_color_pick -> showColorPickerDialog().let { true }
+        else -> super.onOptionsItemSelected(item)
     }
 
-    private fun showColorPickerDialog() {
-        val colorDialog = SpectrumDialog.Builder(this)
-        colorDialog.setColors(R.array.predefined_colors)
 
+    private fun showColorPickerDialog() {
+        val colorDialog = ColorSelectionDialog()
+        colorDialog.onColorSelectedListener = { color ->
+            applyNoteColor(color)
+        }
+        colorDialog.selectedColor = note?.let {  it.color?.toColor(this) } ?: Note().color.toColor(this)
+        colorDialog.show(supportFragmentManager, getString(R.string.color_selection_title))
+    }
+
+    fun applyNoteColor(color : Int?) {
         if (note == null) {
             note = Note()
         }
-
-        note?.let {
-            colorDialog.setSelectedColor(it.color.toColorResId())
-            colorDialog.setOnColorSelectedListener { positiveResult, color ->
-                if (positiveResult) {
-                    val newColor = colorToPredefinedColor(applicationContext, color, Note().color)
-                    note?.color = newColor
-                    initView()
-                }
+        note?.let { note ->
+            color?.let { color ->
+                val newColor = colorToPredefinedColor(applicationContext, color, Note().color)
+                note.color = newColor
+                initView()
             }
         }
-        colorDialog.build()?.show(supportFragmentManager, "Select color")
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.note_editor_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
 
-    private fun saveNote() = title_editor_text.text?.let {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean =
+        menuInflater.inflate(R.menu.note_editor_menu, menu).let { true }
+
+
+    private fun saveNote() = ui.titleEditorText.text?.let {
         Handler(Looper.getMainLooper()).postDelayed({
             note = note?.copy(
-                title = title_editor_text.text.toString(),
-                text = body_editor_text.text.toString(),
+                title = ui.titleEditorText.text.toString(),
+                text = ui.bodyEditorText.text.toString(),
                 lastChanged = Date()
             ) ?: Note(
-                title = title_editor_text.text.toString(),
-                text = body_editor_text.text.toString(),
-                lastChanged = Date()
+                title = ui.titleEditorText.text.toString(),
+                text = ui.bodyEditorText.text.toString(),
+                lastChanged = Date(),
             )
-
-            note?.let {
-                viewModel.saveChanges(it)
+            note?.let { note ->
+                viewModel.saveChanges(note)
             }
         }, SAVE_DELAY_MS)
     }
@@ -153,8 +156,8 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     }
 
     override fun renderError(error: Throwable) {
-        val snackbar =
-            Snackbar.make(findViewById(layoutResourceId), error.message ?: "", Snackbar.LENGTH_LONG)
-        snackbar.show()
+        Snackbar
+            .make(ui.noteLinearLayout, error.message ?: "", Snackbar.LENGTH_LONG)
+            .show()
     }
 }

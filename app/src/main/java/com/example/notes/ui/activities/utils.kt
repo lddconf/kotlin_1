@@ -3,10 +3,9 @@ package com.example.notes
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.example.notes.model.Note
-import kotlin.math.absoluteValue
 
 fun Note.PredefinedColor.toColorResId(): Int = when (this) {
-    Note.PredefinedColor.WHITE -> R.color.white
+    Note.PredefinedColor.WHITE -> R.color.note_white
     Note.PredefinedColor.RED -> R.color.red
     Note.PredefinedColor.ORANGE -> R.color.orange
     Note.PredefinedColor.YELLOW -> R.color.yellow
@@ -17,7 +16,7 @@ fun Note.PredefinedColor.toColorResId(): Int = when (this) {
 }
 
 fun Note.PredefinedColor.toColor(context: Context): Int = when (this) {
-    Note.PredefinedColor.WHITE -> ContextCompat.getColor(context, R.color.white)
+    Note.PredefinedColor.WHITE -> ContextCompat.getColor(context, R.color.note_white)
     Note.PredefinedColor.RED -> ContextCompat.getColor(context, R.color.red)
     Note.PredefinedColor.ORANGE -> ContextCompat.getColor(context, R.color.orange)
     Note.PredefinedColor.YELLOW -> ContextCompat.getColor(context, R.color.yellow)
@@ -42,3 +41,5 @@ fun colorToPredefinedColor(
     Note.PredefinedColor.VIOLET.toColor(context) -> Note.PredefinedColor.VIOLET
     else -> defaultColor
 }
+
+fun Context.dip(value: Int) = (value* resources.displayMetrics.density).toInt()

@@ -1,6 +1,7 @@
 package com.example.notes.model
 
 import androidx.lifecycle.LiveData
+import com.example.notes.model.auth.User
 
 interface NetworkNoteProvider {
     fun subscribeToNotes(): LiveData<NoteResult>
@@ -9,5 +10,7 @@ interface NetworkNoteProvider {
 
     fun saveNote(note: Note): LiveData<NoteResult>
 
-    fun removeNoteWithId(uid: String): LiveData<NoteResult>
+    fun removeNote(uid: String): LiveData<NoteResult>
+
+    fun getCurrentUser() : LiveData<User?>
 }

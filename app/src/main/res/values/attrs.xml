@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleColorPicker">
+        <attr name="strokeWidthDp" format="dimension" />
+        <attr name="selectedStrokeWidthDp" format="dimension" />
+        <attr name="colors" format="reference" />
+        <attr name="padding" format="dimension" />
+        <attr name="lineWidth" format="dimension" />
+    </declare-styleable>
+
+</resources>
