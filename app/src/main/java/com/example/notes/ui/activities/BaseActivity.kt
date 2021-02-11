@@ -10,7 +10,7 @@ import com.example.notes.ui.viewmodel.BaseViewModel
 abstract class BaseActivity<T, VS : BaseViewState<T>> : AppCompatActivity() {
     abstract val viewModel: BaseViewModel<T, VS>
     abstract val layoutResourceId: Int
-    abstract val ui : ViewBinding
+    abstract val ui: ViewBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

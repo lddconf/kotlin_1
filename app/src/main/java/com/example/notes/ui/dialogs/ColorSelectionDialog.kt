@@ -10,14 +10,14 @@ import com.example.notes.databinding.ColorSelectionDialogBinding
 
 class ColorSelectionDialog : DialogFragment() {
 
-    var ui : ColorSelectionDialogBinding? = null
-    var onColorSelectedListener : ((color : Int?) -> Unit)? = null
-    set(value) {
-        field = value
-        ui?.colorPickerPalette?.onSelectedColorChangedListener = field
-    }
+    var ui: ColorSelectionDialogBinding? = null
+    var onColorSelectedListener: ((color: Int?) -> Unit)? = null
+        set(value) {
+            field = value
+            ui?.colorPickerPalette?.onSelectedColorChangedListener = field
+        }
 
-    var selectedColor : Int? = null
+    var selectedColor: Int? = null
         set(value) {
             field = value
             ui?.colorPickerPalette?.selectedColor = value
@@ -46,7 +46,7 @@ class ColorSelectionDialog : DialogFragment() {
 
         ui?.colorPickerPalette?.selectedColor = selectedColor
 
-        ui?.colorSelectionDialogCloseBtn?.setOnClickListener{
+        ui?.colorSelectionDialogCloseBtn?.setOnClickListener {
             dismiss()
         }
     }
@@ -55,7 +55,6 @@ class ColorSelectionDialog : DialogFragment() {
         super.onDestroyView()
         ui = null
     }
-
 
 
 }

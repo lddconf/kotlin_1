@@ -15,16 +15,8 @@ fun Note.PredefinedColor.toColorResId(): Int = when (this) {
     Note.PredefinedColor.VIOLET -> R.color.violet
 }
 
-fun Note.PredefinedColor.toColor(context: Context): Int = when (this) {
-    Note.PredefinedColor.WHITE -> ContextCompat.getColor(context, R.color.note_white)
-    Note.PredefinedColor.RED -> ContextCompat.getColor(context, R.color.red)
-    Note.PredefinedColor.ORANGE -> ContextCompat.getColor(context, R.color.orange)
-    Note.PredefinedColor.YELLOW -> ContextCompat.getColor(context, R.color.yellow)
-    Note.PredefinedColor.GREEN -> ContextCompat.getColor(context, R.color.green)
-    Note.PredefinedColor.BLUE -> ContextCompat.getColor(context, R.color.blue)
-    Note.PredefinedColor.DARK_BLUE -> ContextCompat.getColor(context, R.color.dark_blue)
-    Note.PredefinedColor.VIOLET -> ContextCompat.getColor(context, R.color.violet)
-}
+fun Note.PredefinedColor.toColor(context: Context): Int =
+    ContextCompat.getColor(context, this.toColorResId())
 
 fun colorToPredefinedColor(
     context: Context,
@@ -42,4 +34,4 @@ fun colorToPredefinedColor(
     else -> defaultColor
 }
 
-fun Context.dip(value: Int) = (value* resources.displayMetrics.density).toInt()
+fun Context.dip(value: Int) = (value * resources.displayMetrics.density).toInt()

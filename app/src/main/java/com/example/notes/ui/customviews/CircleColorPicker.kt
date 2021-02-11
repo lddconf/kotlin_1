@@ -70,7 +70,7 @@ class CircleColorPicker @JvmOverloads constructor(
 
     var selectedColor: Int? = null
         set(value) {
-            if ( value != field ) {
+            if (value != field) {
                 field = value
                 invalidate()
                 onSelectedColorChangedListener?.apply {
@@ -79,7 +79,7 @@ class CircleColorPicker @JvmOverloads constructor(
             }
         }
 
-    var onSelectedColorChangedListener : ((Int?) -> Unit)? = null
+    var onSelectedColorChangedListener: ((Int?) -> Unit)? = null
 
     private var center: Pair<Int, Int> = 0 to 0
     private var regions = mutableMapOf<Int, Region>()
@@ -196,13 +196,13 @@ class CircleColorPicker @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event?.let {
-            if ( event.action == MotionEvent.ACTION_DOWN ) {
+            if (event.action == MotionEvent.ACTION_DOWN) {
                 val x = event.getX().toInt()
                 val y = event.getY().toInt()
                 //Scan for color
-                regions.forEach{
-                    if ( it.value.contains(x,y)) {
-                        if ( selectedColor == it.key ) return false
+                regions.forEach {
+                    if (it.value.contains(x, y)) {
+                        if (selectedColor == it.key) return false
                         selectedColor = it.key
                         invalidate()
                         onSelectedColorChangedListener?.apply {
