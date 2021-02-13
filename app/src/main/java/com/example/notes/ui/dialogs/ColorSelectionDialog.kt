@@ -55,6 +55,4 @@ class ColorSelectionDialog : DialogFragment() {
         super.onDestroyView()
         ui = null
     }
-
-
 }
