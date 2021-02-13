@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.rule.ActivityTestRule
@@ -13,6 +14,7 @@ import com.example.notes.model.NotesRepo
 import com.example.notes.ui.activities.NoteViewActivity
 import com.example.notes.ui.activities.NoteViewState
 import io.mockk.*
+import org.hamcrest.core.IsNot.not
 import org.junit.After
 import org.junit.Before
 
@@ -63,7 +65,16 @@ class NoteViewModelTest {
     @Test
     fun should_shown_color_picker() {
         onView(withId(R.id.action_color_pick)).perform(click())
-        onView(withText(R.string.color_selection_title)).check(matches(isDisplayed()))
+        onView(withId(R.id.color_picker_palette)).check(matches(isDisplayed()))
+        onView(withId(R.id.color_selection_dialog_close_btn)).check(matches(isDisplayed()))
     }
 
+    @Test
+    fun should_close_color_picker() {
+        onView(withId(R.id.action_color_pick)).perform(click())
+        onView(withId(R.id.color_selection_dialog_close_btn)).perform(click())
+
+        onView(withId(R.id.color_picker_palette)).check(doesNotExist())
+        onView(withId(R.id.color_selection_dialog_close_btn)).check(doesNotExist())
+    }
 }
