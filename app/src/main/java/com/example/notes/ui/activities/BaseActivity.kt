@@ -5,12 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import com.example.notes.databinding.ActivityMainBinding
 import com.example.notes.ui.viewmodel.BaseViewModel
+import com.google.android.material.snackbar.Snackbar
 
 
 abstract class BaseActivity<T, VS : BaseViewState<T>> : AppCompatActivity() {
     abstract val viewModel: BaseViewModel<T, VS>
     abstract val layoutResourceId: Int
-    abstract val ui : ViewBinding
+    abstract val ui: ViewBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,5 +27,11 @@ abstract class BaseActivity<T, VS : BaseViewState<T>> : AppCompatActivity() {
 
     protected abstract fun renderData(data: T)
 
-    protected abstract fun renderError(error: Throwable)
+    protected open fun renderError(error: Throwable) {
+        Snackbar.make(
+            ui.root,
+            error.message.toString(),
+            Snackbar.LENGTH_LONG
+        ).show()
+    }
 }

@@ -41,12 +41,13 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
         }
     }
 
+
     override fun renderError(error: Throwable) {
         when (error) {
             is NoAuthException -> startLoginActivity()
             else ->
                 Snackbar.make(
-                    ui.splashLayout,
+                    ui.root,
                     error.message.toString(),
                     Snackbar.LENGTH_LONG
                 ).show()

@@ -127,12 +127,4 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
             adapter.notes = this
         }
     }
-
-    override fun renderError(error: Throwable) {
-        Snackbar.make(
-            ui.appbarLayout,
-            error.message ?: "",
-            Snackbar.LENGTH_LONG
-        ).show()
-    }
 }

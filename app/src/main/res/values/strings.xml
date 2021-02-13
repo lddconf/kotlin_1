@@ -23,7 +23,7 @@
     <string name="logout">Logout</string>
     <string name="logout_dialog_title">Logout</string>
     <string name="logout_dialog_message">Do you want to logout?</string>
-    <string name="logout_dlg_ok_btn_title">Logout</string>
+    <string name="logout_dlg_ok_btn_title">Quit</string>
     <string name="logout_dlg_no_btn_title">Cancel</string>
     <string name="geonotes_app_title">GeoNotes App</string>
     <string name="action_recover_deleted_note">Dou you want to recover deleted note?</string>
