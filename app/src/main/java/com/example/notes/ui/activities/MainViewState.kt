@@ -5,4 +5,4 @@ import com.example.notes.model.Note
 class MainViewState(
     val notes: List<Note>? = null,
     error: Throwable? = null
-) : BaseViewState<List<Note>?>(notes,error)
+) : BaseViewState<List<Note>?>(notes, error)

@@ -111,11 +111,12 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
         colorDialog.onColorSelectedListener = { color ->
             applyNoteColor(color)
         }
-        colorDialog.selectedColor = note?.let {  it.color?.toColor(this) } ?: Note().color.toColor(this)
+        colorDialog.selectedColor =
+            note?.let { it.color?.toColor(this) } ?: Note().color.toColor(this)
         colorDialog.show(supportFragmentManager, getString(R.string.color_selection_title))
     }
 
-    fun applyNoteColor(color : Int?) {
+    fun applyNoteColor(color: Int?) {
         if (note == null) {
             note = Note()
         }
@@ -153,11 +154,5 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
     override fun renderData(data: Note?) {
         note = data
         initView()
-    }
-
-    override fun renderError(error: Throwable) {
-        Snackbar
-            .make(ui.noteLinearLayout, error.message ?: "", Snackbar.LENGTH_LONG)
-            .show()
     }
 }
