@@ -119,7 +119,7 @@ class FireBaseCloudNoteProviderTest {
     fun `saveNote return Note`() {
         val mockDocumentReference: DocumentReference = mockk()
         val slot = slot<OnSuccessListener<in Void>>()
-        var result : Note? = null
+        var result: Note? = null
 
         every { mockCollection.document(testNotes[0].uid) } returns mockDocumentReference
         every {

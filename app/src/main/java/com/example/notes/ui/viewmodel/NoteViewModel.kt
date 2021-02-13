@@ -1,5 +1,6 @@
 package com.example.notes.ui.viewmodel
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.notes.model.Note
@@ -20,7 +21,6 @@ class NoteViewModel(private val repo: NotesRepo) :
         currentNote?.let { note ->
             repo.saveNote(note)
         }
-
     }
 
     fun loadNote(uid: String) {
