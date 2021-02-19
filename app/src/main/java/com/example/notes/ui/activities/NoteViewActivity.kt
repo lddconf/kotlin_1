@@ -23,10 +23,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
+class NoteViewActivity : BaseActivity<Note?>() {
     companion object {
         const val EXTRA_NOTE = "NoteViewActivity.extra.NOTE"
-        const val SAVE_DELAY_MS = 3.toLong()
+        const val SAVE_DELAY_MS = 1000.toLong()
         fun getStartIntent(context: Context, uid: String?): Intent {
             val intent = Intent(context, NoteViewActivity::class.java)
             intent.putExtra(EXTRA_NOTE, uid)
@@ -64,9 +64,19 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
         uid?.let { id ->
             viewModel.loadNote(id)
         }
+        addOnTextChangedListener()
+    }
+
+    private fun addOnTextChangedListener() {
         ui.titleEditorText.addTextChangedListener(onTextChangedListener)
         ui.bodyEditorText.addTextChangedListener(onTextChangedListener)
     }
+
+    private fun removeOnTextChangedListener() {
+        ui.titleEditorText.removeTextChangedListener(onTextChangedListener)
+        ui.bodyEditorText.removeTextChangedListener(onTextChangedListener)
+    }
+
 
     private fun initView() {
         note?.let { note ->
@@ -81,8 +91,10 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
                     )
                 )
             }
+            removeOnTextChangedListener()
             ui.titleEditorText.setText(note.title)
             ui.bodyEditorText.setText(note.text)
+            addOnTextChangedListener()
         }
     }
 
@@ -125,6 +137,7 @@ class NoteViewActivity : BaseActivity<Note?, NoteViewState>() {
                 val newColor = colorToPredefinedColor(applicationContext, color, Note().color)
                 note.color = newColor
                 initView()
+                saveNote()
             }
         }
     }

@@ -16,7 +16,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 private const val LOGIN_RC = 782
 private const val REQUEST_DELAY_MS = 1000L
 
-class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
+class SplashActivity : BaseActivity<Boolean>() {
 
     override val viewModel: SplashViewModel by viewModel()
 
@@ -35,7 +35,7 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
         )
     }
 
-    override fun renderData(data: Boolean?) {
+    override fun renderData(data: Boolean) {
         data?.takeIf { it }?.let {
             startMainActivity()
         }
