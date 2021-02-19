@@ -9,10 +9,13 @@ class SplashViewModel(private val repo: NotesRepo) :
     BaseViewModel<Boolean>() {
     fun requestUser() {
         launch {
-            repo.getCurrentUser()?.let {
-                setData(true)
-            } ?: setError(NoAuthException())
-
+            try {
+                repo.getCurrentUser()?.let {
+                    setData(true)
+                } ?: setError(NoAuthException())
+            } catch ( e : Throwable ) {
+                setError(NoAuthException())
+            }
         }
     }
 }

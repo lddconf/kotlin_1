@@ -24,6 +24,7 @@ abstract class BaseActivity<T> : AppCompatActivity(), CoroutineScope {
     abstract val layoutResourceId: Int
     abstract val ui: ViewBinding
 
+    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(ui.root)
