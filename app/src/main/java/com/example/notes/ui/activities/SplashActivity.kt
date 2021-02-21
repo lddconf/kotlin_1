@@ -32,7 +32,7 @@ class SplashActivity : BaseActivity<Boolean>() {
 
     override fun onResume() {
         super.onResume()
-        launch (Dispatchers.Main) {
+        launch {
             delay(REQUEST_DELAY_MS)
             viewModel.requestUser()
         }

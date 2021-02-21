@@ -16,7 +16,7 @@ abstract class BaseActivity<T> : AppCompatActivity(), CoroutineScope {
         Dispatchers.Main + Job()
     }
 
-    private lateinit var dataJob : Job
+    private lateinit var dataJob: Job
     private lateinit var errorJob: Job
 
 
@@ -28,6 +28,10 @@ abstract class BaseActivity<T> : AppCompatActivity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(ui.root)
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         dataJob = launch {
             viewModel.viewState().consumeEach {
@@ -43,14 +47,15 @@ abstract class BaseActivity<T> : AppCompatActivity(), CoroutineScope {
     }
 
     override fun onStop() {
-        super.onStop()
         dataJob.cancel()
         errorJob.cancel()
+        super.onStop()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+
         coroutineContext.cancel()
+        super.onDestroy()
     }
 
     protected abstract fun renderData(data: T)
