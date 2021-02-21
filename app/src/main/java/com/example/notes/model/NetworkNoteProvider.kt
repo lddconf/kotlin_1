@@ -2,15 +2,12 @@ package com.example.notes.model
 
 import androidx.lifecycle.LiveData
 import com.example.notes.model.auth.User
+import kotlinx.coroutines.channels.ReceiveChannel
 
 interface NetworkNoteProvider {
-    fun subscribeToNotes(): LiveData<NoteResult>
-
-    fun getNoteById(uid: String): LiveData<NoteResult>
-
-    fun saveNote(note: Note): LiveData<NoteResult>
-
-    fun removeNote(uid: String): LiveData<NoteResult>
-
-    fun getCurrentUser() : LiveData<User?>
+    suspend fun subscribeToNotes(): ReceiveChannel<NoteResult>
+    suspend fun getNoteById(uid: String): Note
+    suspend fun saveNote(note: Note): Note
+    suspend fun removeNote(uid: String): Note?
+    suspend fun getCurrentUser(): User?
 }

@@ -11,32 +11,35 @@ import com.example.notes.model.auth.NoAuthException
 import com.example.notes.ui.viewmodel.SplashViewModel
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
+import com.squareup.okhttp.Dispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 
 private const val LOGIN_RC = 782
 private const val REQUEST_DELAY_MS = 1000L
 
-class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
+class SplashActivity : BaseActivity<Boolean>() {
 
     override val viewModel: SplashViewModel by viewModel()
 
     override val layoutResourceId: Int = R.layout.activity_splash
 
-    override val ui : ActivitySplashBinding by lazy {
+    override val ui: ActivitySplashBinding by lazy {
         ActivitySplashBinding.inflate(layoutInflater)
     }
 
     override fun onResume() {
         super.onResume()
-        Handler(Looper.getMainLooper())
-            .postDelayed({
-                viewModel.requestUser()
-            }, REQUEST_DELAY_MS
-        )
+        launch {
+            delay(REQUEST_DELAY_MS)
+            viewModel.requestUser()
+        }
     }
 
-    override fun renderData(data: Boolean?) {
-        data?.takeIf { it }?.let {
+    override fun renderData(data: Boolean) {
+        if (data) {
             startMainActivity()
         }
     }
@@ -55,7 +58,7 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
     }
 
     private fun startMainActivity() {
-        startActivity(MainActivity.getStartIntent(this ))
+        startActivity(MainActivity.getStartIntent(this))
     }
 
     private fun startLoginActivity() {
@@ -71,7 +74,8 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
                     )
                 )
                 .build(),
-            LOGIN_RC )
+            LOGIN_RC
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
